@@ -1,5 +1,4 @@
 # Focusbuddy-AI
-# Focusbuddy-AI
 
 An IoT-based focus tracking and parental control system that helps users maintain productive study sessions through hardware monitoring and web-based management.
 
