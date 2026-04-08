@@ -1,0 +1,88 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+
+// ---- WiFi ----
+const char* ssid = "Asmit(yash)";
+const char* password = "aerosiii";
+String server_url = "http:// 10.107.5.246:5000/upload"; // Flask endpoint
+// ---- OLED ----
+Adafruit_SSD1306 display(128, 64, &Wire);
+
+// ---- Pins ----
+int IR_PIN = 34;         // IR proximity sensor OUT pin
+int BUZZER_PIN = 25;     // Buzzer pin
+int TOUCH_PIN = 13;      // Touch pin T4
+
+// ---- Timing ----
+unsigned long lastSend = 0;
+unsigned long sendInterval = 3000;
+
+void showMessage(String msg) {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println(msg);
+  display.display();
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // Init Display
+  Wire.begin(21,22);
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  showMessage("Booting...");
+
+  // Pin setup
+  pinMode(IR_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  // WiFi Connect
+  showMessage("WiFi...");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(300);
+  }
+  showMessage("WiFi OK");
+  delay(700);
+}
+
+String getFocusState() {
+  int ir = analogRead(IR_PIN);
+  int touchValue = touchRead(TOUCH_PIN);
+
+  // Simple Logic:
+  if (ir < 500) return "away";
+  if (touchValue < 30) return "distracted";
+  return "focused";
+}
+
+void buzzAlert() {
+  tone(BUZZER_PIN, 1200, 180); // freq, duration
+}
+
+void sendToServer(String state) {
+  if(WiFi.status()== WL_CONNECTED){
+    HTTPClient http;
+    http.begin(server_url);
+    http.addHeader("Content-Type", "application/json");
+    String data = "{\"state\":\"" + state + "\"}";
+    http.POST(data);
+    http.end();
+  }
+}
+
+void loop() {
+  String state = getFocusState();
+  showMessage(state);
+
+  if (state == "distracted") buzzAlert();
+
+  if (millis() - lastSend > sendInterval) {
+    lastSend = millis();
+    sendToServer(state);
+  }
+}

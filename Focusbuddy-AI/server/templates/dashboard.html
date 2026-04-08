@@ -1,0 +1,37 @@
+<h2>Phone Unlock</h2>
+<input id="passInput" type="password" placeholder="Set password">
+<button onclick="savePass()">Save</button>
+
+<p id="phoneStatus">Loading...</p>
+<button onclick="startSession()">Start Study</button>
+<button onclick="endSession()">End Study</button>
+
+<script>
+function savePass() {
+  fetch("/set_password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: document.getElementById("passInput").value })
+  });
+}
+
+function startSession() {
+  fetch("/start_session", { method: "POST" });
+}
+
+function endSession() {
+  fetch("/end_session", { method: "POST" });
+}
+
+function checkPass() {
+  fetch("/get_password")
+  .then(r => r.json())
+  .then(data => {
+    if (data.status == "locked") document.getElementById("phoneStatus").innerText = "🔒 Phone Locked — Study In Progress";
+    else if (data.status == "unlocked") document.getElementById("phoneStatus").innerText = "🔓 Password: " + data.password;
+    else document.getElementById("phoneStatus").innerText = "No Password Set";
+  });
+}
+
+setInterval(checkPass, 1500);
+</script>
