@@ -128,6 +128,8 @@ Focusbuddy-AI combines an ESP32 microcontroller with sensors and a Flask web ser
 - `GET /status`: Current session status
 - `GET /timer`: Timer information
 
+(this may not work - the development under process)
+
 ## Future Improvements
 
 - **Camera Integration**: Add computer vision for advanced distraction detection (facial recognition, eye-tracking, object detection)
