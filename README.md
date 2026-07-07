@@ -6,7 +6,7 @@ An IoT-based focus tracking and parental control system that helps users maintai
 
 Focusbuddy-AI combines an ESP32 microcontroller with sensors and a Flask web server to monitor user focus during study sessions. The system detects distractions, enforces timed sessions, and provides parental controls through password-protected phone unlocking. It aims to reduce interruptions and improve productivity by providing real-time feedback and secure access management.
 
-## Key Features
+## Features 
 
 - **Real-time Focus Monitoring**: Uses IR proximity and capacitive touch sensors to detect user presence and potential distractions
 - **Audible Alerts**: Buzzer notifications for detected distractions
